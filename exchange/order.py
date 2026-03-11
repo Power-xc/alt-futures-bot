@@ -80,6 +80,10 @@ def enter_long(exchange: ccxt.binanceusdm,
 
     # ── 3. SL 스탑 마켓 주문 등록 ────────────────────────────
     sl_order = place_stop_market(exchange, symbol, "sell", sl_price, qty)
+    if not sl_order:
+        logger.error(f"[진입취소] {symbol} SL 주문 실패 -> 포지션 청산 필요")
+        cancel_all_orders(exchange, symbol)
+        return None
 
     # ── 4. TP1 / TP2 지정가 주문 등록 ────────────────────────
     tp1_order = place_limit_order(exchange, symbol, "sell", tp1_price, qty1)
@@ -91,7 +95,7 @@ def enter_long(exchange: ccxt.binanceusdm,
         "sl_price":     sl_price,
         "tp1_price":    tp1_price,
         "tp2_price":    tp2_price,
-        "sl_order_id":  str(sl_order["id"])  if sl_order  else "",
+        "sl_order_id":  str(sl_order["id"]),
         "tp1_order_id": str(tp1_order["id"]) if tp1_order else "",
         "tp2_order_id": str(tp2_order["id"]) if tp2_order else "",
     }

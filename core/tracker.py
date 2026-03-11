@@ -69,8 +69,8 @@ def _check_position(exchange: ccxt.binanceusdm,
     if not pos["tp1_hit"]:
         original_qty = pos["qty"]
         current_qty  = real_pos["qty"]
-        # 10% 이상 수량 감소 = TP1 체결로 판단
-        if current_qty < original_qty * 0.6:
+        # 수량 45% 이상 감소 = TP1 체결로 판단 (슬리피지 마진 포함)
+        if current_qty < original_qty * 0.55:
             _handle_tp1_hit(exchange, state, pos, real_pos)
 
 
