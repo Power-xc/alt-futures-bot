@@ -205,7 +205,7 @@ def notify_morning_report(equity: float,
         pos_lines  += f"\n  • {sym} @ ${entry:,.4f} [{tp1_status}]"
 
     _send(
-        f"☀️ <b>아침 보고</b>  {_now_kst()} KST\n"
+        f"☀️ <b>아침 보고 [알트봇]</b>  {_now_kst()} KST\n"
         f"잔고: <b>${equity:,.0f}</b>  |  오늘 PnL: {pnl_str} ({trade_count}회)\n"
         f"오픈 포지션: {len(open_positions)}개{pos_lines}\n"
         f"감시 중: {watching}개 심볼"
