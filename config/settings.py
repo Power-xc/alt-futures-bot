@@ -29,8 +29,9 @@ def get_api_credentials() -> dict:
 def get_telegram_credentials() -> dict:
     """텔레그램 봇 인증 정보 반환 (미설정 시 빈 문자열)"""
     return {
-        "token":   os.getenv("TELEGRAM_TOKEN", ""),
-        "chat_id": os.getenv("TELEGRAM_CHAT_ID", ""),
+        "token":     os.getenv("TELEGRAM_TOKEN", ""),
+        "chat_id":   os.getenv("TELEGRAM_CHAT_ID", ""),
+        "chat_id_2": os.getenv("TELEGRAM_CHAT_ID_2", ""),
     }
 
 

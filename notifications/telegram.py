@@ -37,18 +37,25 @@ def _send(text: str) -> bool:
     if not creds["token"] or not creds["chat_id"]:
         return False  # 설정 안 됨 -> 조용히 스킵
 
-    try:
-        url  = f"https://api.telegram.org/bot{creds['token']}/sendMessage"
-        resp = requests.post(
-            url,
-            json={"chat_id": creds["chat_id"], "text": text, "parse_mode": "HTML"},
-            timeout=5,
-        )
-        resp.raise_for_status()
-        return True
-    except Exception as e:
-        logger.warning(f"[텔레그램] 전송 실패 (무시): {e}")
-        return False
+    url = f"https://api.telegram.org/bot{creds['token']}/sendMessage"
+    chat_ids = [creds["chat_id"]]
+    extra = creds.get("chat_id_2")
+    if extra and extra != creds["chat_id"]:
+        chat_ids.append(extra)
+
+    success = False
+    for chat_id in chat_ids:
+        try:
+            resp = requests.post(
+                url,
+                json={"chat_id": chat_id, "text": text, "parse_mode": "HTML"},
+                timeout=5,
+            )
+            resp.raise_for_status()
+            success = True
+        except Exception as e:
+            logger.warning(f"[텔레그램] 전송 실패 (무시): {e}")
+    return success
 
 
 def _now_kst() -> str:
