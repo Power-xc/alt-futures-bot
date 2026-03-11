@@ -1,0 +1,28 @@
+# systemd 서비스 파일 — Oracle Cloud / Linux 서버 배포용
+#
+# 설치 방법:
+#   sudo cp scripts/alt-futures-bot.service /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable alt-futures-bot
+#   sudo systemctl start alt-futures-bot
+#
+# 로그 확인:
+#   sudo journalctl -u alt-futures-bot -f
+
+[Unit]
+Description=Alt Futures Bot - 알트코인 눌림목 롱 전략
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/alt-futures-bot
+ExecStart=/usr/bin/python3 run_live.py --yes
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

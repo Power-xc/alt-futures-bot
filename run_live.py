@@ -24,11 +24,11 @@ import argparse
 import logging
 import sys
 import time
-from datetime import datetime, timezone, timedelta, date
+from datetime import datetime, timezone, timedelta
 
 import ccxt
 
-from exchange.client import create_client, check_connection, get_total_balance, get_usdt_balance
+from exchange.client import create_client, check_connection, get_total_balance, get_usdt_balance, setup_symbol
 from exchange.order import enter_long
 from strategy.scanner import scan_all
 from strategy.sizer import calc_position_size
@@ -111,6 +111,10 @@ def _execute_entry(exchange: ccxt.binanceusdm,
     if dry_run:
         logger.info(f"[DRY RUN] {symbol} 진입 건너뜀")
         return
+
+    # ── 심볼 초기 설정 (격리마진 + 레버리지 5x) ──────────────────────────────
+    # 진입 직전에 호출 (이미 설정돼 있어도 안전하게 덮어씀)
+    setup_symbol(exchange, symbol)
 
     # ── 주문 실행 (시장가 + SL/TP 주문 일괄 등록) ────────────────────────────
     result = enter_long(exchange, symbol, margin, notional, entry_price)
@@ -215,8 +219,6 @@ def run(exchange: ccxt.binanceusdm, dry_run: bool = False) -> None:
                     equity = get_total_balance(exchange)
                     _execute_entry(exchange, state, signal, equity, dry_run)
 
-            # 상태 내 pending_signals 참조 동기화 (scan_all 에서 직접 수정됨)
-            state["pending_signals"] = pending_signals
             save_state(state)
 
             logger.debug(

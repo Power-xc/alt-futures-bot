@@ -12,6 +12,7 @@
 핵심: 즉각 추격 매수(승률 42~47%) 대신 눌림 대기(승률 65~70%)
 """
 import logging
+import time
 from datetime import datetime, timezone, timedelta
 
 import ccxt
@@ -138,6 +139,9 @@ def scan_all(exchange: ccxt.binanceusdm,
                 signals.append(sig)
         except Exception as e:
             logger.warning(f"[스캔] {symbol} 오류 (건너뜀): {e}")
+
+        # API 레이트 리밋 보호 (심볼 간 0.1초 대기)
+        time.sleep(0.1)
 
     # 급등 폭 큰 순 정렬 (우선순위 높은 신호 먼저)
     signals.sort(key=lambda s: s["pump_pct"], reverse=True)

@@ -15,11 +15,10 @@ from datetime import datetime, timezone
 
 import ccxt
 
-from exchange.client import get_position, cancel_all_orders
+from exchange.client import get_position, get_current_price
 from exchange.order import close_position_market
 from core.state import (
-    get_open_symbols, remove_position, update_position,
-    get_position_state, update_daily_pnl,
+    remove_position, update_position, update_daily_pnl,
 )
 import notifications.telegram as tg
 
@@ -146,7 +145,6 @@ def _close_and_record(exchange: ccxt.binanceusdm,
 
     if success:
         # 현재가 기준 PnL 추정 (실제 체결가는 거래소 확인 필요)
-        from exchange.client import get_current_price
         current_price = get_current_price(exchange, symbol)
         pnl_est = (current_price - pos["entry_price"]) * pos["qty"]
         if pos["tp1_hit"]:
