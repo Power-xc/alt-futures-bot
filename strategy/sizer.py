@@ -1,3 +1,4 @@
+from typing import Optional
 """
 포지션 사이징 - Half Kelly x 레버리지
 
@@ -21,7 +22,7 @@ from config.constants import HALF_KELLY, LEVERAGE, TIER1_LIMITS
 logger = logging.getLogger(__name__)
 
 
-def calc_position_size(equity: float, symbol: str) -> tuple | None:
+def calc_position_size(equity: float, symbol: str) -> Optional[tuple]:
     """
     포지션 크기 계산 (Half Kelly x 5x)
 

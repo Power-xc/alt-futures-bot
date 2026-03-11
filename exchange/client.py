@@ -1,3 +1,4 @@
+from typing import Optional
 """
 바이낸스 USD-M 선물 클라이언트 (ccxt 기반)
 
@@ -124,7 +125,7 @@ def get_current_price(exchange: ccxt.binanceusdm, symbol: str) -> float:
         return 0.0
 
 
-def get_position(exchange: ccxt.binanceusdm, symbol: str) -> dict | None:
+def get_position(exchange: ccxt.binanceusdm, symbol: str) -> Optional[dict]:
     """
     심볼 현재 포지션 반환
 
@@ -180,7 +181,7 @@ def place_market_order(exchange: ccxt.binanceusdm,
                        side: str,
                        usdt_notional: float,
                        current_price: float,
-                       reduce_only: bool = False) -> dict | None:
+                       reduce_only: bool = False) -> Optional[dict]:
     """
     시장가 주문
 
@@ -214,7 +215,7 @@ def place_stop_market(exchange: ccxt.binanceusdm,
                       symbol: str,
                       side: str,
                       stop_price: float,
-                      qty: float) -> dict | None:
+                      qty: float) -> Optional[dict]:
     """
     스탑 마켓 주문 (손절용 — 거래소에 등록되어 봇 장애 시에도 SL 유지)
 
@@ -242,7 +243,7 @@ def place_limit_order(exchange: ccxt.binanceusdm,
                       symbol: str,
                       side: str,
                       price: float,
-                      qty: float) -> dict | None:
+                      qty: float) -> Optional[dict]:
     """
     지정가 주문 (익절용 — GTC + reduceOnly)
 

@@ -68,7 +68,7 @@ TIER1_LIMITS = {
     "DOTUSDT":    200_000,
     "LTCUSDT":    200_000,
     "LINKUSDT":   200_000,
-    "MATICUSDT":  200_000,
+    "POLUSDT":    200_000,
     "ARBUSDT":    200_000,
     "UNIUSDT":    150_000,
     "ATOMUSDT":   150_000,

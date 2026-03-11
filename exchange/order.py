@@ -1,3 +1,4 @@
+from typing import Optional
 """
 주문 실행 레이어 — 전략 로직을 실제 바이낸스 주문으로 변환
 
@@ -29,7 +30,7 @@ def enter_long(exchange: ccxt.binanceusdm,
                symbol: str,
                margin: float,
                notional: float,
-               current_price: float) -> dict | None:
+               current_price: float) -> Optional[dict]:
     """
     롱 진입 + SL/TP 주문 일괄 등록
 

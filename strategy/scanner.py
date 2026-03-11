@@ -1,3 +1,4 @@
+from typing import Optional
 """
 신호 스캐너 - 눌림목 롱 진입 신호 감지
 
@@ -27,7 +28,7 @@ logger = logging.getLogger(__name__)
 
 def scan_symbol(exchange: ccxt.binanceusdm,
                 symbol: str,
-                pending_signals: dict) -> dict | None:
+                pending_signals: dict) -> Optional[dict]:
     """
     단일 심볼 신호 스캔
 
