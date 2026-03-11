@@ -20,7 +20,8 @@ logger = logging.getLogger(__name__)
 
 KST = timedelta(hours=9)
 
-_CREDS = None  # 초기화 지연 (import 시 .env 미로드 방지)
+_CREDS  = None   # 초기화 지연 (import 시 .env 미로드 방지)
+_OFFSET = 0      # getUpdates long-polling offset
 
 
 def _get_creds() -> dict:
@@ -129,6 +130,56 @@ def notify_skip(symbol: str, reason: str) -> None:
 def notify_error(error: str) -> None:
     """오류 알림"""
     _send(f"⚠️ <b>오류 발생</b>\n{error[:300]}")
+
+
+def check_commands(state: dict, equity: float) -> None:
+    """
+    텔레그램 명령어 폴링 및 응답
+      /status  - 현재 포지션 + 감시 중 심볼
+      /pnl     - 오늘 PnL + 누적 거래 횟수
+    """
+    global _OFFSET
+    creds = _get_creds()
+    if not creds["token"] or not creds["chat_id"]:
+        return
+
+    try:
+        url  = f"https://api.telegram.org/bot{creds['token']}/getUpdates"
+        resp = requests.get(url, params={"offset": _OFFSET, "timeout": 1}, timeout=5)
+        resp.raise_for_status()
+        updates = resp.json().get("result", [])
+    except Exception:
+        return
+
+    for upd in updates:
+        _OFFSET = upd["update_id"] + 1
+        msg = upd.get("message", {})
+        text = msg.get("text", "").strip().lower()
+
+        if text == "/status":
+            positions = state.get("open_positions", [])
+            pending   = state.get("pending_signals", {})
+            pos_lines = ""
+            for p in positions:
+                tp1 = "TP1완료" if p["tp1_hit"] else "대기중"
+                pos_lines += f"\n  • {p['symbol']} @ ${p['entry_price']:,.4f} [{tp1}]"
+            _send(
+                f"📊 <b>현황</b>  {_now_kst()} KST\n"
+                f"잔고: <b>${equity:,.0f}</b>\n"
+                f"오픈 포지션: {len(positions)}개{pos_lines}\n"
+                f"감시 중: {len(pending)}개 심볼"
+            )
+
+        elif text == "/pnl":
+            ds    = state.get("daily_state", {})
+            pnl   = ds.get("realized_pnl", 0)
+            count = ds.get("trade_count", 0)
+            pnl_str = f"+${pnl:,.2f}" if pnl >= 0 else f"-${abs(pnl):,.2f}"
+            _send(
+                f"💰 <b>오늘 PnL</b>  {_now_kst()} KST\n"
+                f"실현 PnL: <b>{pnl_str}</b>  ({count}회 거래)\n"
+                f"잔고: ${equity:,.0f}"
+            )
 
 
 def notify_morning_report(equity: float,

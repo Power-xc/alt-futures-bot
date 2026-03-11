@@ -195,6 +195,9 @@ def run(exchange: ccxt.binanceusdm, dry_run: bool = False) -> None:
                 _send_morning_report(state, equity)
                 last_report_date = now_kst.date()
 
+            # ── 텔레그램 명령어 처리 (/status, /pnl) ─────────────────────────
+            tg.check_commands(state, equity)
+
             # ── 오픈 포지션 모니터링 (매 60초) ───────────────────────────────
             if state["open_positions"]:
                 check_all_positions(exchange, state)
